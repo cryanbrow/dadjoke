@@ -2,12 +2,13 @@ module github.com/cryanbrow/dadjoke
 
 go 1.17
 
+require github.com/spf13/cobra v1.3.0
+
 require (
 	github.com/BurntSushi/toml v0.4.1 // indirect
 	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
-	github.com/spf13/cobra v1.3.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	golang.org/x/mod v0.5.1 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
