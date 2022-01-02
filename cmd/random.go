@@ -22,13 +22,7 @@ var randomCmd = &cobra.Command{
 	Short: "Get a random dad joke",
 	Long:  `This command fetches a random dad joke from the icanhazdadjoke api`,
 	Run: func(cmd *cobra.Command, args []string) {
-		jokeTerm, _ := cmd.Flags().GetString("term")
-
-		if jokeTerm != "" {
-			getRandomJokeWithTerm(jokeTerm)
-		} else {
-			getRandomJoke()
-		}
+		evaluateCall(cmd.Flags().GetString("term"))
 	},
 }
 
@@ -59,6 +53,27 @@ type SearchResult struct {
 	SearchTerm string          `json:"search_term"`
 	Status     int             `json:"status"`
 	TotalJokes int             `json:"total_jokes"`
+}
+
+// HTTPClient interface
+type HTTPClient interface {
+	Do(req *http.Request) (*http.Response, error)
+}
+
+var (
+	Client HTTPClient
+)
+
+func init() {
+	Client = &http.Client{}
+}
+
+func evaluateCall(term string, err error) {
+	if term != "" {
+		getRandomJokeWithTerm(term)
+	} else {
+		getRandomJoke()
+	}
 }
 
 func getRandomJoke() {
@@ -96,19 +111,22 @@ func getJokeData(baseAPI string) []byte {
 	request, err := http.NewRequest(http.MethodGet, baseAPI, nil)
 	if err != nil {
 		log.Printf("Could not request a dad joke. %v", err)
+		return nil
 	}
 
 	request.Header.Add("Accept", "application/json")
 	request.Header.Add("User-Agent", "Dad Joke CLI (https://github.com/cryanbrow/dadjoke)")
 
-	response, err := http.DefaultClient.Do(request)
+	response, err := Client.Do(request)
 	if err != nil {
 		log.Printf("Could not make request. %v", err)
+		return nil
 	}
 
 	responseBytes, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		log.Printf("Could not read response for body. %v", err)
+		return nil
 	}
 
 	return responseBytes
